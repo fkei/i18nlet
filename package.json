@@ -1,0 +1,58 @@
+{
+  "name": "i18nlet",
+  "version": "0.0.1",
+  "description": "Internationalization library. (NodeJS, Browser)",
+  "main": "dist/cjs.i18nlet.js",
+  "jsnext:main": "dist/es.i18nlet.js",
+  "scripts": {
+    "test": "npm run build && npm run karma && npm run mocha",
+    "build": "npm run lint && npm run rollup",
+    "release": "npm run build && npm run uglify",
+    "lint": "eslint ./src/**/* ./test/index.js",
+    "rollup": "node rollup.js",
+    "watch": "chokidar src/* -c 'npm run build'",
+    "uglify": "npm run uglify:amd && npm run uglify:iife",
+    "uglify:amd": "uglifyjs dist/amd.i18nlet.js --comments --mangle -o dist/amd.i18nlet.min.js",
+    "uglify:iife": "uglifyjs dist/iife.i18nlet.js --comments --mangle -o dist/iife.i18nlet.min.js",
+    "mocha": "npm run rollup; mocha test/index.js --timeout 1000b0 --exit",
+    "mocha-dev": "npm run rollup; mocha test/index.js --inspect --inspect-brk --no-timeouts --exit",
+    "karma": "karma start test/karma.conf.js",
+    "karma-dev": "DEBUG=1 karma start test/karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fkei/i18nlet.git"
+  },
+  "keywords": [
+    "localization",
+    "i18n"
+  ],
+  "author": "fkei <kei.topaz@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fkei/i18nlet/issues"
+  },
+  "homepage": "https://github.com/fkei/i18nlet#readme",
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-fixture": "^0.2.6",
+    "karma-json-fixtures-preprocessor": "0.0.6",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-power-assert": "^1.0.0",
+    "karma-rollup-plugin": "^0.2.4",
+    "karma-rollup-preprocessor": "^5.1.1",
+    "karma-safari-launcher": "^1.0.0",
+    "mocha": "^5.0.4",
+    "power-assert": "^1.4.4",
+    "rollup": "^0.57.0",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.2.0",
+    "uglify-es": "^3.3.9"
+  }
+}
