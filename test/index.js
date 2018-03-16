@@ -160,4 +160,35 @@ describe('basic test case.', () => {
 
   });
 
+  it('hook', () => {
+    const i18nlet = new I18nlet({
+      debug: true,
+      hook: {
+        load: function (langage, terms) {
+          Object.keys(terms).forEach(context => {
+            this.k2v[`${langage}${this.settings.langageSeparator}${context}`] = terms[context];
+          });
+          if (langage === 'en') { // copy en to fr :P
+            Object.keys(terms).forEach(context => {
+              this.k2v[`fr${this.settings.langageSeparator}${context}`] = terms[context];
+            });
+          }
+        },
+        loads: function (data) {
+          if (data.ja) { // delete ja :P
+            delete data.ja;
+          }
+          Object.keys(data).forEach(v => {
+            this.load(v, data[v]);
+          });
+        }
+      }
+    });
+
+    i18nlet.loads(data);
+
+    assert.equal('i18nlet', i18nlet.k2v['fr:project.name']);
+    assert.ok(!i18nlet.k2v['ja:project.name']);
+  });
+
 });

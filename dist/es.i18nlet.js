@@ -29,6 +29,22 @@ var _output = function (type) {
   }
 };
 
+var defaultLoad = function (langage, terms) {
+  var this$1 = this;
+
+  Object.keys(terms).forEach(function (context) {
+    this$1.k2v[("" + langage + (this$1.settings.langageSeparator) + context)] = terms[context];
+  });
+};
+
+var defaultLoads = function (data) {
+  var this$1 = this;
+
+  Object.keys(data).forEach(function (v) {
+    this$1.load(v, data[v]);
+  });
+};
+
 
 /**
  * @class I18nlet
@@ -52,7 +68,6 @@ var I18nlet = function I18nlet(settings) {
 
   this.regexpStr = (this.settings.variableKeyPrefix) + "(.+?)" + (this.settings.variableKeySuffix);
   this.regexp = new RegExp(this.regexpStr, 'g');
-
 
   this.logger = {};
   this.logger.output = settings.output || _output;
@@ -78,27 +93,33 @@ var I18nlet = function I18nlet(settings) {
   this.logger.error = function (message) {
     var err = new Error(("[i18nlet] " + message));
     this$1.logger.output.apply(null, ['ERROR', err]);
-    throw err;
   };
+
+  this.hook = {
+    load: defaultLoad,
+    loads: defaultLoads,
+  };
+  if (settings.hook && settings.hook.load) {
+    this.logger.debug('hook load()');
+    this.hook.load = settings.hook.load;
+  }
+  if (settings.hook && settings.hook.loads) {
+    this.logger.debug('hook loads()');
+    this.hook.loads = settings.hook.loads;
+  }
 
   ///
 };
 
 
-I18nlet.prototype.load = function load (langage, terms) {
-    var this$1 = this;
-
-  Object.keys(terms).forEach(function (context) {
-    this$1.k2v[("" + langage + (this$1.settings.langageSeparator) + context)] = terms[context];
-  });
+I18nlet.prototype.load = function load (/*langage, terms*/) {
+  this.hook.load.apply(this, arguments);
+  return this;
 };
 
-I18nlet.prototype.loads = function loads (data) {
-    var this$1 = this;
-
-  Object.keys(data).forEach(function (v) {
-    this$1.load(v, data[v]);
-  });
+I18nlet.prototype.loads = function loads (/*data*/) {
+  this.hook.loads.apply(this, arguments);
+  return this;
 };
 
 I18nlet.prototype.changeLangage = function changeLangage (langage) {

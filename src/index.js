@@ -23,6 +23,18 @@ const _output = (type, ...args) => {
   }
 };
 
+const defaultLoad = function (langage, terms) {
+  Object.keys(terms).forEach(context => {
+    this.k2v[`${langage}${this.settings.langageSeparator}${context}`] = terms[context];
+  });
+};
+
+const defaultLoads = function (data) {
+  Object.keys(data).forEach(v => {
+    this.load(v, data[v]);
+  });
+};
+
 
 /**
  * @class I18nlet
@@ -50,7 +62,6 @@ class I18nlet {
     this.regexpStr = `${this.settings.variableKeyPrefix}(.+?)${this.settings.variableKeySuffix}`;
     this.regexp = new RegExp(this.regexpStr, 'g');
 
-
     this.logger = {};
     this.logger.output = settings.output || _output;
     /**
@@ -72,23 +83,33 @@ class I18nlet {
     this.logger.error = message => {
       const err = new Error(`[i18nlet] ${message}`);
       this.logger.output.apply(null, ['ERROR', err]);
-      throw err;
     };
+
+    this.hook = {
+      load: defaultLoad,
+      loads: defaultLoads,
+    };
+    if (settings.hook && settings.hook.load) {
+      this.logger.debug('hook load()');
+      this.hook.load = settings.hook.load;
+    }
+    if (settings.hook && settings.hook.loads) {
+      this.logger.debug('hook loads()');
+      this.hook.loads = settings.hook.loads;
+    }
 
     ///
   }
 
 
-  load(langage, terms) {
-    Object.keys(terms).forEach(context => {
-      this.k2v[`${langage}${this.settings.langageSeparator}${context}`] = terms[context];
-    });
+  load(/*langage, terms*/) {
+    this.hook.load.apply(this, arguments);
+    return this;
   }
 
-  loads(data) {
-    Object.keys(data).forEach(v => {
-      this.load(v, data[v]);
-    });
+  loads(/*data*/) {
+    this.hook.loads.apply(this, arguments);
+    return this;
   }
 
   changeLangage(langage) {
