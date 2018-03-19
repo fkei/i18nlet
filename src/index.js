@@ -6,7 +6,9 @@ const langageSeparator = ':';
 const variableKeyPrefix = '{{';
 const variableKeySuffix = '}}';
 const defaultNoConvertVariable = null;
+const defaultText = '';
 const defaultGetMessageFunctionName = 'i';
+const defaultReference = true;
 
 /**
  * console output
@@ -59,7 +61,17 @@ class I18nlet {
 
     this.settings.variableKeyPrefix = settings.variableKeyPrefix || variableKeyPrefix;
     this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
-    this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
+    this.settings.noConvertVariable = settings.noConvertVariable || defaultNoConvertVariable;
+
+    this.settings.reference = defaultReference;
+    if ((typeof settings.reference) === 'boolean') {
+      this.settings.reference = settings.reference;
+    }
+
+    this.settings.defaultText = defaultText;
+    if ((typeof settings.defaultText) === 'string') {
+      this.settings.defaultText = settings.defaultText;
+    }
 
     this.settings.getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
     this[this.settings.getMessageFunctionName] = this._i18nlet_get_message;
@@ -125,10 +137,27 @@ class I18nlet {
     return this.settings.currentLangage;
   }
 
+  _getDefaultText(context, text, defaultText) {
+    if ((typeof text) !== 'undefined') {
+      return text;
+    }
+    this.logger.debug(`context not found. context:'${context}'`);
+
+    if ((typeof defaultText) === 'string') {
+      return defaultText;
+    }
+    return this.settings.defaultText;
+  }
+
   _i18nlet_get_message(context, vals, options) { // eslint-disable-line
     vals = vals || {};
     options = options || {};
-    options.ref = !!options.ref;
+
+    if ((typeof options.ref) === 'boolean') {
+      options.ref = !!options.ref;
+    } else {
+      options.ref = this.settings.reference;
+    }
     options.langage = options.langage ? options.langage : this.currentLangage();
 
 
@@ -145,7 +174,7 @@ class I18nlet {
       const val = vals[match[1].trim()];
       if (!val) {
         this.logger.debug(`It can not convert the variable part. '${match[0]}' for '${ret}'`);
-        ret = (typeof this.settings.defaultNoConvertVariable === 'string') ? ret.replace(match[0], this.settings.defaultNoConvertVariable) : ret;
+        ret = (typeof this.settings.noConvertVariable === 'string') ? ret.replace(match[0], this.settings.noConvertVariable) : ret;
         continue;
       }
 
@@ -154,7 +183,7 @@ class I18nlet {
     }
 
     if (!options.ref) {
-      return ret;
+      return this._getDefaultText(context, ret, options.defaultText);
     }
 
     let matchRef;
@@ -163,7 +192,7 @@ class I18nlet {
       const valRef = this.k2v[ctxRef];
       if (!valRef) {
         this.logger.debug(`It can not convert the constant part. '${matchRef[0]}' for '${ret}'`);
-        ret = (typeof this.settings.defaultNoConvertVariable === 'string') ? ret.replace(matchRef[0], this.settings.defaultNoConvertVariable) : ret;
+        ret = (typeof this.settings.noConvertVariable === 'string') ? ret.replace(matchRef[0], this.settings.noConvertVariable) : ret;
         continue;
       }
 
@@ -172,7 +201,7 @@ class I18nlet {
 
     }
 
-    return ret;
+    return this._getDefaultText(context, ret, options.defaultText);
 
   }
 

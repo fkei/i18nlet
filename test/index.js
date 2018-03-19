@@ -50,7 +50,7 @@ describe('basic test case.', () => {
     assert.equal('en', normal.settings.currentLangage);
     assert.equal(false, normal.settings.debug);
     assert.equal('en', normal.settings.defaultLangage);
-    assert.equal(null, normal.settings.defaultNoConvertVariable);
+    assert.equal(null, normal.settings.noConvertVariable);
     assert.equal('function', typeof normal.i);
     assert.equal('i', normal.settings.getMessageFunctionName);
 
@@ -67,12 +67,15 @@ describe('basic test case.', () => {
       currentLangage: 'ja',
       debug: true,
       defaultLangage: 'ja',
-      defaultNoConvertVariable: 'empty',
+      noConvertVariable: 'empty variable',
+      reference: false,
+      defaultText: 'context not found',
       langageSeparator: '_',
       variableKeyPrefix: '#{',
       variableKeySuffix: '}#',
       getMessageFunctionName: 'getMessage',
     });
+
     custom.loads(data);
 
     ///
@@ -84,7 +87,9 @@ describe('basic test case.', () => {
     assert.equal('ja', custom.settings.currentLangage);
     assert.equal(true, custom.settings.debug);
     assert.equal('ja', custom.settings.defaultLangage);
-    assert.equal('empty', custom.settings.defaultNoConvertVariable);
+    assert.equal('empty variable', custom.settings.noConvertVariable);
+    assert.equal(false, custom.settings.reference);
+    assert.equal('context not found', custom.settings.defaultText);
     assert.equal('function', typeof custom.getMessage);
     assert.equal('undefined', typeof custom.i);
 
@@ -94,9 +99,8 @@ describe('basic test case.', () => {
     assert.equal('}#', custom.settings.variableKeySuffix);
 
     assert.ok(!!custom.k2v['ja_project.description']);
-    assert.equal('国際化対応ライブラリ ({{nodejs}}, {{browser}})', custom.getMessage('project.description', null, {
-      ref: false,
-    }));
+    assert.equal('国際化対応ライブラリ ({{nodejs}}, {{browser}})',
+      custom.getMessage('project.description'));
 
   });
 
@@ -120,7 +124,37 @@ describe('basic test case.', () => {
   it('get message i(context)', () => {
     const i18nlet = new I18nlet();
     i18nlet.loads(data);
-    assert.equal(data.en.hello, i18nlet.i('hello'));
+    assert.equal('Hello {{name}} :)', i18nlet.i('hello'));
+  });
+
+  it('get message not found i(context)', () => {
+    const i18nlet = new I18nlet();
+    i18nlet.loads(data);
+    assert.equal('', i18nlet.i('not found'));
+  });
+
+  it('get message i(context, null, {ref: boolean})', () => {
+    const i18nlet0 = new I18nlet();
+    i18nlet0.loads(data);
+    assert.equal('Hello {{name}} :)', i18nlet0.i('hello', null, {
+      ref: true
+    }));
+    assert.equal(data.en.hello, i18nlet0.i('hello', null, {
+      ref: false
+    }));
+
+    const i18nlet1 = new I18nlet({
+      reference: false,
+    });
+    i18nlet1.loads(data);
+    assert.equal(data.en.hello, i18nlet1.i('hello'));
+
+    assert.equal('Hello {{name}} :)', i18nlet1.i('hello', null, {
+      ref: true
+    }));
+    assert.equal(data.en.hello, i18nlet1.i('hello', null, {
+      ref: false
+    }));
   });
 
   it('get message i(context, vals)', () => {
@@ -135,11 +169,12 @@ describe('basic test case.', () => {
   it('get message i(context, vals, ref)', () => {
     const i18nlet = new I18nlet();
     i18nlet.loads(data);
-    assert.equal(data.en.hello, i18nlet.i('hello'));
+    assert.equal(data.en.hello, i18nlet.i('hello', null, {
+      ref: false
+    }));
     assert.equal('Hello fkei :)', i18nlet.i('hello', {
       name: 'fkei',
     }, {
-      ref: true,
       langage: 'en'
     }));
   });
@@ -167,6 +202,7 @@ describe('basic test case.', () => {
     }));
 
   });
+
 
   it('hook', () => {
     const i18nlet = new I18nlet({

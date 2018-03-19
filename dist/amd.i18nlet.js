@@ -11,7 +11,9 @@ define(function () { 'use strict';
   var variableKeyPrefix = '{{';
   var variableKeySuffix = '}}';
   var defaultNoConvertVariable = null;
+  var defaultText = '';
   var defaultGetMessageFunctionName = 'i';
+  var defaultReference = true;
 
   /**
    * console output
@@ -68,7 +70,17 @@ define(function () { 'use strict';
 
     this.settings.variableKeyPrefix = settings.variableKeyPrefix || variableKeyPrefix;
     this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
-    this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
+    this.settings.noConvertVariable = settings.noConvertVariable || defaultNoConvertVariable;
+
+    this.settings.reference = defaultReference;
+    if ((typeof settings.reference) === 'boolean') {
+      this.settings.reference = settings.reference;
+    }
+
+    this.settings.defaultText = defaultText;
+    if ((typeof settings.defaultText) === 'string') {
+      this.settings.defaultText = settings.defaultText;
+    }
 
     this.settings.getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
     this[this.settings.getMessageFunctionName] = this._i18nlet_get_message;
@@ -137,12 +149,29 @@ define(function () { 'use strict';
     return this.settings.currentLangage;
   };
 
+  I18nlet.prototype._getDefaultText = function _getDefaultText (context, text, defaultText) {
+    if ((typeof text) !== 'undefined') {
+      return text;
+    }
+    this.logger.debug(("context not found. context:'" + context + "'"));
+
+    if ((typeof defaultText) === 'string') {
+      return defaultText;
+    }
+    return this.settings.defaultText;
+  };
+
   I18nlet.prototype._i18nlet_get_message = function _i18nlet_get_message (context, vals, options) {
       var this$1 = this;
    // eslint-disable-line
     vals = vals || {};
     options = options || {};
-    options.ref = !!options.ref;
+
+    if ((typeof options.ref) === 'boolean') {
+      options.ref = !!options.ref;
+    } else {
+      options.ref = this.settings.reference;
+    }
     options.langage = options.langage ? options.langage : this.currentLangage();
 
 
@@ -159,7 +188,7 @@ define(function () { 'use strict';
       var val = vals[match[1].trim()];
       if (!val) {
         this$1.logger.debug(("It can not convert the variable part. '" + (match[0]) + "' for '" + ret + "'"));
-        ret = (typeof this$1.settings.defaultNoConvertVariable === 'string') ? ret.replace(match[0], this$1.settings.defaultNoConvertVariable) : ret;
+        ret = (typeof this$1.settings.noConvertVariable === 'string') ? ret.replace(match[0], this$1.settings.noConvertVariable) : ret;
         continue;
       }
 
@@ -168,7 +197,7 @@ define(function () { 'use strict';
     }
 
     if (!options.ref) {
-      return ret;
+      return this._getDefaultText(context, ret, options.defaultText);
     }
 
     var matchRef;
@@ -177,7 +206,7 @@ define(function () { 'use strict';
       var valRef = this$1.k2v[ctxRef];
       if (!valRef) {
         this$1.logger.debug(("It can not convert the constant part. '" + (matchRef[0]) + "' for '" + ret + "'"));
-        ret = (typeof this$1.settings.defaultNoConvertVariable === 'string') ? ret.replace(matchRef[0], this$1.settings.defaultNoConvertVariable) : ret;
+        ret = (typeof this$1.settings.noConvertVariable === 'string') ? ret.replace(matchRef[0], this$1.settings.noConvertVariable) : ret;
         continue;
       }
 
@@ -186,7 +215,7 @@ define(function () { 'use strict';
 
     }
 
-    return ret;
+    return this._getDefaultText(context, ret, options.defaultText);
 
   };
 
