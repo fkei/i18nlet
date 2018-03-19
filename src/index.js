@@ -61,8 +61,8 @@ class I18nlet {
     this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
     this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
 
-    const getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
-    this[getMessageFunctionName] = this._i18nlet_get_message;
+    this.settings.getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
+    this[this.settings.getMessageFunctionName] = this._i18nlet_get_message;
 
     this.regexpStr = `${this.settings.variableKeyPrefix}(.+?)${this.settings.variableKeySuffix}`;
     this.regexp = new RegExp(this.regexpStr, 'g');

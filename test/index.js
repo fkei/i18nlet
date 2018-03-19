@@ -52,6 +52,8 @@ describe('basic test case.', () => {
     assert.equal('en', normal.settings.defaultLangage);
     assert.equal(null, normal.settings.defaultNoConvertVariable);
     assert.equal('function', typeof normal.i);
+    assert.equal('i', normal.settings.getMessageFunctionName);
+
     assert.equal(':', normal.settings.langageSeparator);
     assert.equal('{{', normal.settings.variableKeyPrefix);
     assert.equal('}}', normal.settings.variableKeySuffix);
@@ -86,6 +88,7 @@ describe('basic test case.', () => {
     assert.equal('function', typeof custom.getMessage);
     assert.equal('undefined', typeof custom.i);
 
+    assert.equal('getMessage', custom.settings.getMessageFunctionName);
     assert.equal('_', custom.settings.langageSeparator);
     assert.equal('#{', custom.settings.variableKeyPrefix);
     assert.equal('}#', custom.settings.variableKeySuffix);

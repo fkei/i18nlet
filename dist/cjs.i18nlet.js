@@ -1,7 +1,7 @@
-/* i18nlet version 0.0.2 */
+/* i18nlet version 0.0.3 */
 'use strict';
 
-var VERSION = "0.0.2";
+var VERSION = "0.0.3";
 
 /*global VERSION*/
 
@@ -70,8 +70,8 @@ var I18nlet = function I18nlet(settings) {
   this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
   this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
 
-  var getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
-  this[getMessageFunctionName] = this._i18nlet_get_message;
+  this.settings.getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
+  this[this.settings.getMessageFunctionName] = this._i18nlet_get_message;
 
   this.regexpStr = (this.settings.variableKeyPrefix) + "(.+?)" + (this.settings.variableKeySuffix);
   this.regexp = new RegExp(this.regexpStr, 'g');
