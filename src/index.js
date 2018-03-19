@@ -6,6 +6,8 @@ const langageSeparator = ':';
 const variableKeyPrefix = '{{';
 const variableKeySuffix = '}}';
 const defaultNoConvertVariable = null;
+const defaultGetMessageFunctionName = 'i';
+
 /**
  * console output
  *
@@ -58,6 +60,9 @@ class I18nlet {
     this.settings.variableKeyPrefix = settings.variableKeyPrefix || variableKeyPrefix;
     this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
     this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
+
+    const getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
+    this[getMessageFunctionName] = this._i18nlet_get_message;
 
     this.regexpStr = `${this.settings.variableKeyPrefix}(.+?)${this.settings.variableKeySuffix}`;
     this.regexp = new RegExp(this.regexpStr, 'g');
@@ -120,7 +125,7 @@ class I18nlet {
     return this.settings.currentLangage;
   }
 
-  i(context, vals, options) {
+  _i18nlet_get_message(context, vals, options) { // eslint-disable-line
     vals = vals || {};
     options = options || {};
     options.ref = !!options.ref;

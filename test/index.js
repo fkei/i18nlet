@@ -51,6 +51,7 @@ describe('basic test case.', () => {
     assert.equal(false, normal.settings.debug);
     assert.equal('en', normal.settings.defaultLangage);
     assert.equal(null, normal.settings.defaultNoConvertVariable);
+    assert.equal('function', typeof normal.i);
     assert.equal(':', normal.settings.langageSeparator);
     assert.equal('{{', normal.settings.variableKeyPrefix);
     assert.equal('}}', normal.settings.variableKeySuffix);
@@ -68,6 +69,7 @@ describe('basic test case.', () => {
       langageSeparator: '_',
       variableKeyPrefix: '#{',
       variableKeySuffix: '}#',
+      getMessageFunctionName: 'getMessage',
     });
     custom.loads(data);
 
@@ -81,12 +83,15 @@ describe('basic test case.', () => {
     assert.equal(true, custom.settings.debug);
     assert.equal('ja', custom.settings.defaultLangage);
     assert.equal('empty', custom.settings.defaultNoConvertVariable);
+    assert.equal('function', typeof custom.getMessage);
+    assert.equal('undefined', typeof custom.i);
+
     assert.equal('_', custom.settings.langageSeparator);
     assert.equal('#{', custom.settings.variableKeyPrefix);
     assert.equal('}#', custom.settings.variableKeySuffix);
 
     assert.ok(!!custom.k2v['ja_project.description']);
-    assert.equal('国際化対応ライブラリ ({{nodejs}}, {{browser}})', custom.i('project.description', null, {
+    assert.equal('国際化対応ライブラリ ({{nodejs}}, {{browser}})', custom.getMessage('project.description', null, {
       ref: false,
     }));
 

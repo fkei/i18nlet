@@ -1,8 +1,8 @@
-/* i18nlet version 0.0.1 */
+/* i18nlet version 0.0.2 */
 var i18nlet = (function () {
 'use strict';
 
-var VERSION = "0.0.1";
+var VERSION = "0.0.2";
 
 /*global VERSION*/
 
@@ -12,6 +12,8 @@ var langageSeparator = ':';
 var variableKeyPrefix = '{{';
 var variableKeySuffix = '}}';
 var defaultNoConvertVariable = null;
+var defaultGetMessageFunctionName = 'i';
+
 /**
  * console output
  *
@@ -68,6 +70,9 @@ var I18nlet = function I18nlet(settings) {
   this.settings.variableKeyPrefix = settings.variableKeyPrefix || variableKeyPrefix;
   this.settings.variableKeySuffix = settings.variableKeySuffix || variableKeySuffix;
   this.settings.defaultNoConvertVariable = settings.defaultNoConvertVariable || defaultNoConvertVariable;
+
+  var getMessageFunctionName = settings.getMessageFunctionName || defaultGetMessageFunctionName;
+  this[getMessageFunctionName] = this._i18nlet_get_message;
 
   this.regexpStr = (this.settings.variableKeyPrefix) + "(.+?)" + (this.settings.variableKeySuffix);
   this.regexp = new RegExp(this.regexpStr, 'g');
@@ -133,9 +138,9 @@ I18nlet.prototype.currentLangage = function currentLangage () {
   return this.settings.currentLangage;
 };
 
-I18nlet.prototype.i = function i (context, vals, options) {
+I18nlet.prototype._i18nlet_get_message = function _i18nlet_get_message (context, vals, options) {
     var this$1 = this;
-
+ // eslint-disable-line
   vals = vals || {};
   options = options || {};
   options.ref = !!options.ref;
