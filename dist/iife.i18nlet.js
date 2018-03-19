@@ -1,8 +1,8 @@
-/* i18nlet version 0.0.3 */
+/* i18nlet version 0.0.4 */
 var i18nlet = (function () {
   'use strict';
 
-  var VERSION = "0.0.3";
+  var VERSION = "0.0.4";
 
   /*global VERSION*/
 
