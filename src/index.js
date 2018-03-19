@@ -45,11 +45,7 @@ const defaultLoads = function (data) {
  */
 class I18nlet {
 
-  /**
-   * Creates an instance of I18nlet.
-   * @memberof I18nlet
-   */
-  constructor(settings = {}) {
+  init(settings = {}) {
     this.version = VERSION || '';
     this.k2v = {};
 
@@ -116,6 +112,8 @@ class I18nlet {
     }
 
     ///
+
+    return this;
   }
 
 

@@ -55,9 +55,11 @@ var defaultLoads = function (data) {
 /**
  * @class I18nlet
  */
-var I18nlet = function I18nlet(settings) {
-  var this$1 = this;
-  if ( settings === void 0 ) settings = {};
+var I18nlet = function I18nlet () {};
+
+I18nlet.prototype.init = function init (settings) {
+    var this$1 = this;
+    if ( settings === void 0 ) settings = {};
 
   this.version = VERSION || '';
   this.k2v = {};
@@ -95,8 +97,8 @@ var I18nlet = function I18nlet(settings) {
    * @param {*} args
    */
   this.logger.debug = function () {
-    var args = [], len = arguments.length;
-    while ( len-- ) args[ len ] = arguments[ len ];
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
 
     if (!this$1.settings.debug) {
       return;
@@ -128,6 +130,8 @@ var I18nlet = function I18nlet(settings) {
   }
 
   ///
+
+  return this;
 };
 
 

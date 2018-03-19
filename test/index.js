@@ -36,7 +36,7 @@ var data = {
 describe('basic test case.', () => {
 
   it('constructor normal', () => {
-    const normal = new I18nlet();
+    const normal = new I18nlet().init();
 
     assert.equal(0, Object.keys(normal.k2v).length);
     ///
@@ -63,7 +63,7 @@ describe('basic test case.', () => {
   });
 
   it('constructor custom', () => {
-    const custom = new I18nlet({
+    const custom = new I18nlet().init({
       currentLangage: 'ja',
       debug: true,
       defaultLangage: 'ja',
@@ -106,13 +106,13 @@ describe('basic test case.', () => {
 
 
   it('loads', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
     assert.ok(!!i18nlet.k2v['ja:project.description']);
   });
 
   it('load', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.load('en', data.en);
     assert.ok(!!i18nlet.k2v['en:project.description']);
     assert.ok(!i18nlet.k2v['ja:project.description']);
@@ -122,19 +122,19 @@ describe('basic test case.', () => {
   });
 
   it('get message i(context)', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
     assert.equal('Hello {{name}} :)', i18nlet.i('hello'));
   });
 
   it('get message not found i(context)', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
     assert.equal('', i18nlet.i('not found'));
   });
 
   it('get message i(context, null, {ref: boolean})', () => {
-    const i18nlet0 = new I18nlet();
+    const i18nlet0 = new I18nlet().init();
     i18nlet0.loads(data);
     assert.equal('Hello {{name}} :)', i18nlet0.i('hello', null, {
       ref: true
@@ -143,7 +143,7 @@ describe('basic test case.', () => {
       ref: false
     }));
 
-    const i18nlet1 = new I18nlet({
+    const i18nlet1 = new I18nlet().init({
       reference: false,
     });
     i18nlet1.loads(data);
@@ -158,7 +158,7 @@ describe('basic test case.', () => {
   });
 
   it('get message i(context, vals)', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
     assert.equal('GoodBye! fkei', i18nlet.i('goodbye', {
       name: 'fkei',
@@ -167,7 +167,7 @@ describe('basic test case.', () => {
   });
 
   it('get message i(context, vals, ref)', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
     assert.equal(data.en.hello, i18nlet.i('hello', null, {
       ref: false
@@ -181,7 +181,7 @@ describe('basic test case.', () => {
 
 
   it('get message i(context, vals, {ref, langage)', () => {
-    const i18nlet = new I18nlet();
+    const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
 
     assert.equal('こんにちは えふけい :)', i18nlet.i('hello', {
@@ -205,7 +205,7 @@ describe('basic test case.', () => {
 
 
   it('hook', () => {
-    const i18nlet = new I18nlet({
+    const i18nlet = new I18nlet().init({
       debug: true,
       hook: {
         load: function (langage, terms) {
