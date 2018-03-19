@@ -9,8 +9,7 @@ const
   banner_bundle = require('./rollup.vars').banner_bundle, // eslint-disable-line
   intro = require('./rollup.vars').intro;
 
-let namedExports = {
-};
+let namedExports = {};
 
 // @see https://rollupjs.org/guide/en#javascript-api
 
@@ -35,9 +34,6 @@ async function buildIifeAmd() {
   await bundle.write({
     format: 'iife',
     name: 'i18nlet',
-    globals: {
-      i18nlet: 'i18nlet'
-    },
     banner: banner,
     intro: intro,
     file: 'dist/iife.i18nlet.js',
