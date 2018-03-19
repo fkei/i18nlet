@@ -1,5 +1,5 @@
-/* i18nlet version 0.0.4 */
-var VERSION = "0.0.4";
+/* i18nlet version 0.0.5 */
+var VERSION = "0.0.5";
 
 /*global VERSION*/
 
