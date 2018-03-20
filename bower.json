@@ -1,0 +1,21 @@
+{
+  "name": "i18nlet",
+  "description": "Internationalization library. (NodeJS, Browser)",
+  "main": "dist/iife.i18nlet.js",
+  "authors": [
+    "fkei <kei.topaz@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "localization",
+    "i18n"
+  ],
+  "homepage": "https://github.com/fkei/i18nlet",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
