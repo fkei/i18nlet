@@ -1,9 +1,0 @@
-{
-  "project.name": "i18nlet",
-  "browser": "Browser",
-  "nodejs": "NodeJS",
-  "emoji.happy": ":)",
-  "project.description": "Internationalization library. ({{nodejs}}, {{browser}})",
-  "hello": "Hello {{name}} {{emoji.happy}}",
-  "goodbye": "GoodBye! {{name}}"
-}

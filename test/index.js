@@ -38,7 +38,7 @@ describe('basic test case.', () => {
   it('constructor normal', () => {
     const normal = new I18nlet().init();
 
-    assert.equal(0, Object.keys(normal.k2v).length);
+    assert.equal(0, Object.keys(normal.store).length);
     ///
     assert.equal('function', typeof normal.logger.debug);
     assert.equal('function', typeof normal.logger.output);
@@ -54,7 +54,6 @@ describe('basic test case.', () => {
     assert.equal('function', typeof normal.i);
     assert.equal('i', normal.settings.getMessageFunctionName);
 
-    assert.equal(':', normal.settings.langageSeparator);
     assert.equal('{{', normal.settings.variableKeyPrefix);
     assert.equal('}}', normal.settings.variableKeySuffix);
     ///
@@ -70,7 +69,6 @@ describe('basic test case.', () => {
       noConvertVariable: 'empty variable',
       reference: false,
       defaultText: 'context not found',
-      langageSeparator: '_',
       variableKeyPrefix: '#{',
       variableKeySuffix: '}#',
       getMessageFunctionName: 'getMessage',
@@ -94,11 +92,10 @@ describe('basic test case.', () => {
     assert.equal('undefined', typeof custom.i);
 
     assert.equal('getMessage', custom.settings.getMessageFunctionName);
-    assert.equal('_', custom.settings.langageSeparator);
     assert.equal('#{', custom.settings.variableKeyPrefix);
     assert.equal('}#', custom.settings.variableKeySuffix);
 
-    assert.ok(!!custom.k2v['ja_project.description']);
+    assert.ok(!!custom.store.ja['project.description']);
     assert.equal('国際化対応ライブラリ ({{nodejs}}, {{browser}})',
       custom.getMessage('project.description'));
 
@@ -108,17 +105,17 @@ describe('basic test case.', () => {
   it('loads', () => {
     const i18nlet = new I18nlet().init();
     i18nlet.loads(data);
-    assert.ok(!!i18nlet.k2v['ja:project.description']);
+    assert.ok(!!i18nlet.store.ja['project.description']);
   });
 
   it('load', () => {
     const i18nlet = new I18nlet().init();
     i18nlet.load('en', data.en);
-    assert.ok(!!i18nlet.k2v['en:project.description']);
-    assert.ok(!i18nlet.k2v['ja:project.description']);
+    assert.ok(!!i18nlet.store.en['project.description']);
+    assert.ok(!i18nlet.store.ja);
     i18nlet.load('ja', data.ja);
-    assert.ok(!!i18nlet.k2v['en:project.description']);
-    assert.ok(!!i18nlet.k2v['ja:project.description']);
+    assert.ok(!!i18nlet.store.en['project.description']);
+    assert.ok(!!i18nlet.store.ja['project.description']);
   });
 
   it('get message i(context)', () => {
@@ -203,18 +200,30 @@ describe('basic test case.', () => {
 
   });
 
+  it('get message i() defaultText', () => {
+    const i18nlet = new I18nlet().init();
+    i18nlet.loads(data);
+    assert.equal('', i18nlet.i('empty'));
+  });
 
   it('hook', () => {
     const i18nlet = new I18nlet().init({
       debug: true,
       hook: {
         load: function (langage, terms) {
+          if (!this.store[langage]) {
+            this.store[langage] = {};
+          }
           Object.keys(terms).forEach(context => {
-            this.k2v[`${langage}${this.settings.langageSeparator}${context}`] = terms[context];
+            this.store[langage][context] = terms[context];
           });
+
           if (langage === 'en') { // copy en to fr :P
+            if (!this.store.fr) {
+              this.store.fr = {};
+            }
             Object.keys(terms).forEach(context => {
-              this.k2v[`fr${this.settings.langageSeparator}${context}`] = terms[context];
+              this.store.fr[context] = terms[context];
             });
           }
         },
@@ -231,8 +240,8 @@ describe('basic test case.', () => {
 
     i18nlet.loads(data);
 
-    assert.equal('i18nlet', i18nlet.k2v['fr:project.name']);
-    assert.ok(!i18nlet.k2v['ja:project.name']);
+    assert.equal('i18nlet', i18nlet.store.fr['project.name']);
+    assert.ok(!i18nlet.store.ja);
   });
 
 });

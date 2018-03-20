@@ -2,7 +2,6 @@
 
 const debug = false;
 const defaultLangage = 'en';
-const langageSeparator = ':';
 const variableKeyPrefix = '{{';
 const variableKeySuffix = '}}';
 const defaultNoConvertVariable = null;
@@ -28,8 +27,11 @@ const _output = (type, ...args) => {
 };
 
 const defaultLoad = function (langage, terms) {
+  if (!this.store[langage]) {
+    this.store[langage] = {};
+  }
   Object.keys(terms).forEach(context => {
-    this.k2v[`${langage}${this.settings.langageSeparator}${context}`] = terms[context];
+    this.store[langage][context] = terms[context];
   });
 };
 
@@ -47,12 +49,11 @@ class I18nlet {
 
   init(settings = {}) {
     this.version = VERSION || '';
-    this.k2v = {};
+    this.store = {};
 
     ///
     this.settings = {};
     this.settings.currentLangage = this.settings.defaultLangage = settings.defaultLangage || defaultLangage;
-    this.settings.langageSeparator = settings.langageSeparator || langageSeparator;
     this.settings.debug = settings.debug || debug;
 
     this.settings.variableKeyPrefix = settings.variableKeyPrefix || variableKeyPrefix;
@@ -136,7 +137,7 @@ class I18nlet {
   }
 
   _getDefaultText(context, text, defaultText) {
-    if ((typeof text) !== 'undefined') {
+    if ((typeof text) !== 'undefined' && text !== null) {
       return text;
     }
     this.logger.debug(`context not found. context:'${context}'`);
@@ -158,12 +159,15 @@ class I18nlet {
     }
     options.langage = options.langage ? options.langage : this.currentLangage();
 
+    const langageStore = this.store[options.langage];
+    if (!langageStore || !langageStore[context]) {
+      return this._getDefaultText(context, null, options.defaultText);
+    }
 
-    const ctx = `${options.langage}${this.settings.langageSeparator}${context}`;
-    const value = this.k2v[ctx];
+    const value = langageStore[context];
 
     if (!value) {
-      this.logger.debug(`Context not found. '${context}' for '${ctx}'`);
+      this.logger.debug(`Context not found. '${context}'`);
     }
 
     let ret = value;
@@ -181,13 +185,13 @@ class I18nlet {
     }
 
     if (!options.ref) {
-      return this._getDefaultText(context, ret, options.defaultText);
+      return ret;
     }
 
     let matchRef;
     while (matchRef = this.regexp.exec(ret)) { // eslint-disable-line
-      const ctxRef = `${options.langage || this.currentLangage()}${this.settings.langageSeparator}${matchRef[1].trim()}`;
-      const valRef = this.k2v[ctxRef];
+      const ctxRef = matchRef[1].trim();
+      const valRef = langageStore[ctxRef];
       if (!valRef) {
         this.logger.debug(`It can not convert the constant part. '${matchRef[0]}' for '${ret}'`);
         ret = (typeof this.settings.noConvertVariable === 'string') ? ret.replace(matchRef[0], this.settings.noConvertVariable) : ret;
@@ -199,7 +203,7 @@ class I18nlet {
 
     }
 
-    return this._getDefaultText(context, ret, options.defaultText);
+    return ret;
 
   }
 

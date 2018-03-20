@@ -1,6 +1,6 @@
 {
   "name": "i18nlet",
-  "version": "0.0.5",
+  "version": "0.1.1",
   "description": "Internationalization library. (NodeJS, Browser)",
   "main": "dist/cjs.i18nlet.js",
   "jsnext:main": "dist/es.i18nlet.js",
